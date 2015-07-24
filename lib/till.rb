@@ -13,10 +13,14 @@ class Till
     data["shopName"]
   end
 
-  def add_item(item)
+  def order_time
+    Time.new.strftime("%F %H:%M")
+  end
+
+  def add_item(item, quantity)
     data["prices"].first.each do | name, price|
       # {name: "Flat White", price: 4.75, quantity: 2}
-      order.push({:name => name, :price => price, :quantity => 1}) if name == item
+        order.push({:name => name, :price => price, :quantity => quantity}) if name == item
     end
   end
 
@@ -24,4 +28,17 @@ class Till
     order.inject(0) { |sum, item | sum + (item[:price] * item[:quantity])}
   end
 
-end
+  def tax_added
+    tax = (total * 0.0864).round(2)
+  end
+
+  def total_after_discount
+    total * 0.95 if total > 50.00
+  end
+
+  def muffin_discount
+    p order
+    total * 0.90 if order.include?(:name)
+  end
+
+end  

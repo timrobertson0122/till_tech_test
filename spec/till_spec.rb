@@ -34,10 +34,15 @@ describe Till do
 
     before do 
       allow(JSON).to receive(:load).and_return(data)
+      # allow(subject).to receive(:order_time).and_return(Time.new.strftime("%F %H:%M"))
     end
 
     it 'can return the shop name' do
       expect(subject.shop_name).to eq "The Coffee Connection"
+    end
+
+    it 'can return the date and time of order' do
+      expect(subject.order_time).to eq Time.new.strftime("%F %H:%M")
     end
 
     it"can add Flat White" do
@@ -47,7 +52,8 @@ describe Till do
 
     it 'can add up two items' do
       add_items(["Flat White", "Flat White"])
-      expect(subject.total).to eq(9.50)
+      add_items(["Cafe Latte"])
+      expect(subject.total).to eq(14.25)
     end
 
     # it 'can know the quantities of each item' do
@@ -56,12 +62,30 @@ describe Till do
     # end
 
      it 'can know the quantities of each item' do
-      add_items(["Flat White", "Flat White"])
-      expect(subject.order).to eq [{name: "Flat White", price: 4.75, quantity: 2}]
+      add_items(["Flat White", "Flat White", "Cafe Latte"])
+      expect(subject.order).to eq [{name: "Flat White", price: 4.75, quantity: 2}, 
+        {name: "Cafe Latte", price: 4.75, quantity: 1}]
+    end
+
+    it 'can calculate 8.64% tax on order total' do
+      add_items(["Flat White", "Flat White", "Cafe Latte"])
+      expect(subject.tax_added).to eq (1.23)
+    end
+
+    it 'can discount 5% from order over £50' do
+      add_items(["Affogato", "Affogato", "Affogato", "Affogato", "Affogato"])
+      expect(subject.total_after_discount).to eq (70.3)
+    end
+
+    it 'can calculate a 10% discount for orders containing a muffin' do
+      add_items(["Muffin Of The Day", "Cafe Latte"])
+      expect(subject.muffin_discount).to eq (8.37)
     end
 
     def add_items items
-      items.each{ |item |subject.add_item(item)}
+      items.uniq.each do |item|
+        quantity = items.count(item)
+        subject.add_item(item, quantity)
+      end
     end
 end
-
