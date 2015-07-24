@@ -37,8 +37,7 @@ class Till
   end
 
   def muffin_discount
-    p order
-    total * 0.90 if order.include?(:name)
+    (total * 0.90).round(2) if order.detect { |i| i[:name].include? "Muffin" }
   end
 
 end  
