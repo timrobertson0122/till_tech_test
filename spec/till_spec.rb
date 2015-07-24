@@ -56,11 +56,6 @@ describe Till do
       expect(subject.total).to eq(14.25)
     end
 
-    # it 'can know the quantities of each item' do
-    #   add_items(["Flat White", "Flat White"])
-    #   expect(subject.order).to eq [{"Flat White"=>4.75}, {"Flat White"=>4.75}]
-    # end
-
      it 'can know the quantities of each item' do
       add_items(["Flat White", "Flat White", "Cafe Latte"])
       expect(subject.order).to eq [{name: "Flat White", price: 4.75, quantity: 2}, 
@@ -80,6 +75,12 @@ describe Till do
     it 'can calculate a 10% discount for orders containing a muffin' do
       add_items(["Muffin Of The Day", "Cafe Latte"])
       expect(subject.muffin_discount).to eq (8.37)
+    end
+
+    it 'can accept cash payment, and calculate change' do
+      add_items(["Affogato", "Affogato", "Affogato", "Affogato", "Affogato"])
+      subject.cash_payment(80)
+      expect(subject.cash_change).to eq (9.7)
     end
 
     def add_items items

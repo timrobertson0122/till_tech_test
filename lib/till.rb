@@ -3,10 +3,12 @@ require 'json'
 class Till 
 
   attr_reader :data, :order
+  attr_accessor :cash_change
 
   def initialize(data)
     @data = JSON.load(File.new(data[:data_file]))[0]
     @order = []
+    @cash_change = 0
   end
 
   def shop_name
@@ -38,6 +40,11 @@ class Till
 
   def muffin_discount
     (total * 0.90).round(2) if order.detect { |i| i[:name].include? "Muffin" }
+  end
+
+  def cash_payment(cash)
+    cash_change = (cash - total_after_discount)
+    p cash_change
   end
 
 end  
