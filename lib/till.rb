@@ -19,32 +19,40 @@ class Till
     Time.new.strftime("%F %H:%M")
   end
 
-  def add_item(item, quantity)
+  def add_item(product)
+    product_in_order = order.select{|item|item[:name] == product}.first  
+     
     data["prices"].first.each do | name, price|
-      # {name: "Flat White", price: 4.75, quantity: 2}
-        order.push({:name => name, :price => price, :quantity => quantity}) if name == item
+      if product_in_order
+        product_in_order[:quantity] += 1 if name == product
+      else
+        order.push({:name => name, :price => price, :quantity => 1}) if name == product
+      end
     end
   end
 
-  def total
+  def sub_total
     order.inject(0) { |sum, item | sum + (item[:price] * item[:quantity])}
   end
 
   def tax_added
-    tax = (total * 0.0864).round(2)
+    tax = (sub_total * 0.0864).round(2)
   end
 
-  def total_after_discount
-    total * 0.95 if total > 50.00
+  def fifty_discount
+    sub_total >= 50.00 ? 0.95 : 1
   end
 
   def muffin_discount
-    (total * 0.90).round(2) if order.detect { |i| i[:name].include? "Muffin" }
+     order.any? { |i| i[:name].include? "Muffin" } ? 0.90 : 1
+  end
+
+  def total
+    sub_total * fifty_discount * muffin_discount
   end
 
   def cash_payment(cash)
-    cash_change = (cash - total_after_discount)
-    p cash_change
+    self.cash_change = (cash - total).round(2)
   end
 
 end  

@@ -69,12 +69,12 @@ describe Till do
 
     it 'can discount 5% from order over £50' do
       add_items(["Affogato", "Affogato", "Affogato", "Affogato", "Affogato"])
-      expect(subject.total_after_discount).to eq (70.3)
+      expect(subject.total).to eq (70.3)
     end
 
     it 'can calculate a 10% discount for orders containing a muffin' do
       add_items(["Muffin Of The Day", "Cafe Latte"])
-      expect(subject.muffin_discount).to eq (8.37)
+      expect(subject.muffin_discount).to eq (0.9)
     end
 
     it 'can accept cash payment, and calculate change' do
@@ -84,9 +84,6 @@ describe Till do
     end
 
     def add_items items
-      items.uniq.each do |item|
-        quantity = items.count(item)
-        subject.add_item(item, quantity)
-      end
+      items.each{ |item| subject.add_item(item)}
     end
 end
